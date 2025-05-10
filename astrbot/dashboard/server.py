@@ -52,15 +52,15 @@ class AstrBotDashboard:
         self.chat_route = ChatRoute(self.context, db, core_lifecycle)
         self.tools_root = ToolsRoute(self.context, core_lifecycle)
         self.conversation_route = ConversationRoute(self.context, db, core_lifecycle)
+        self.file_route = FileRoute(self.context)
 
         self.shutdown_event = shutdown_event
 
     async def auth_middleware(self):
         if not request.path.startswith("/api"):
             return
-        if request.path == "/api/auth/login":
-            return
-        if request.path == "/api/chat/get_file":
+        allowed_endpoints = ["/api/auth/login", "/api/chat/get_file", "/api/file"]
+        if any(request.path.startswith(prefix) for prefix in allowed_endpoints):
             return
         # claim jwt
         token = request.headers.get("Authorization")
@@ -125,7 +125,10 @@ class AstrBotDashboard:
 
     def run(self):
         ip_addr = []
-        port = self.core_lifecycle.astrbot_config["dashboard"].get("port", 6185)
+        if p := os.environ.get("DASHBOARD_PORT"):
+            port = p
+        else:
+            port = self.core_lifecycle.astrbot_config["dashboard"].get("port", 6185)
         host = self.core_lifecycle.astrbot_config["dashboard"].get("host", "0.0.0.0")
 
         logger.info(f"正在启动 WebUI, 监听地址: http://{host}:{port}")

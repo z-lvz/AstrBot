@@ -2,8 +2,11 @@
 如需修改配置，请在 `data/cmd_config.json` 中修改或者在管理面板中可视化修改。
 """
 
+import os
+from astrbot.core.utils.astrbot_path import get_astrbot_data_path
+
 VERSION = "3.5.8"
-DB_PATH = "data/data_v3.db"
+DB_PATH = os.path.join(get_astrbot_data_path(), "data_v3.db")
 
 # 默认配置
 DEFAULT_CONFIG = {
@@ -104,6 +107,7 @@ DEFAULT_CONFIG = {
     "knowledge_db": {},
     "persona": [],
     "timezone": "",
+    "callback_api_base": "",
 }
 
 
@@ -1282,6 +1286,12 @@ CONFIG_METADATA_2 = {
                 "type": "string",
                 "obvious_hint": True,
                 "hint": "时区设置。请填写 IANA 时区名称, 如 Asia/Shanghai, 为空时使用系统默认时区。所有时区请查看: https://data.iana.org/time-zones/tzdb-2021a/zone1970.tab",
+            },
+            "callback_api_base": {
+                "description": "对外可达的回调接口地址",
+                "type": "string",
+                "obvious_hint": True,
+                "hint": "外部服务可能会通过 AstrBot 生成的回调链接（如文件下载链接）访问 AstrBot 后端。由于 AstrBot 无法自动判断部署环境中对外可达的主机地址（host），因此需要通过此配置项显式指定 “外部服务如何访问 AstrBot” 的地址。如 http://localhost:6185，https://example.com 等。"
             },
             "log_level": {
                 "description": "控制台日志级别",
