@@ -22,17 +22,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+import asyncio
 import base64
 import json
 import os
-import uuid
-import asyncio
 import typing as T
+import uuid
 from enum import Enum
+
 from pydantic.v1 import BaseModel
-from astrbot.core import logger
-from astrbot.core.utils.io import download_image_by_url, file_to_base64, download_file
+
+from astrbot.core import astrbot_config, file_token_service, logger
 from astrbot.core.utils.astrbot_path import get_astrbot_data_path
+from astrbot.core.utils.io import download_file, download_image_by_url, file_to_base64
 
 
 class ComponentType(Enum):
@@ -199,6 +201,29 @@ class Record(BaseMessageComponent):
             raise Exception(f"not a valid file: {self.file}")
         bs64_data = bs64_data.removeprefix("base64://")
         return bs64_data
+
+    async def register_to_file_service(self) -> str:
+        """
+        将语音注册到文件服务。
+
+        Returns:
+            str: 注册后的URL
+
+        Raises:
+            Exception: 如果未配置 callback_api_base
+        """
+        callback_host = astrbot_config.get("callback_api_base")
+
+        if not callback_host:
+            raise Exception("未配置 callback_api_base，文件服务不可用")
+
+        file_path = await self.convert_to_file_path()
+
+        token = await file_token_service.register_file(file_path)
+
+        logger.debug(f"已注册：{callback_host}/api/file/{token}")
+
+        return f"{callback_host}/api/file/{token}"
 
 
 class Video(BaseMessageComponent):
@@ -406,6 +431,29 @@ class Image(BaseMessageComponent):
         bs64_data = bs64_data.removeprefix("base64://")
         return bs64_data
 
+    async def register_to_file_service(self) -> str:
+        """
+        将图片注册到文件服务。
+
+        Returns:
+            str: 注册后的URL
+
+        Raises:
+            Exception: 如果未配置 callback_api_base
+        """
+        callback_host = astrbot_config.get("callback_api_base")
+
+        if not callback_host:
+            raise Exception("未配置 callback_api_base，文件服务不可用")
+
+        file_path = await self.convert_to_file_path()
+
+        token = await file_token_service.register_file(file_path)
+
+        logger.debug(f"已注册：{callback_host}/api/file/{token}")
+
+        return f"{callback_host}/api/file/{token}"
+
 
 class Reply(BaseMessageComponent):
     type: ComponentType = "Reply"
@@ -468,7 +516,7 @@ class Node(BaseMessageComponent):
     uin: T.Optional[str] = "0"  # qq号
     content: T.Optional[T.Union[str, list, dict]] = ""  # 子消息段列表
     seq: T.Optional[T.Union[str, list]] = ""  # 忽略
-    time: T.Optional[int] = 0 # 忽略
+    time: T.Optional[int] = 0  # 忽略
 
     def __init__(self, content: T.Union[str, list, dict, "Node", T.List["Node"]], **_):
         if isinstance(content, list):
@@ -502,9 +550,10 @@ class Nodes(BaseMessageComponent):
         }
         for node in self.nodes:
             d = node.toDict()
-            d["data"]["uin"] = str(node.uin) # 转为字符串
+            d["data"]["uin"] = str(node.uin)  # 转为字符串
             ret["messages"].append(d)
         return ret
+
 
 class Xml(BaseMessageComponent):
     type: ComponentType = "Xml"
@@ -590,11 +639,13 @@ class File(BaseMessageComponent):
             try:
                 loop = asyncio.get_event_loop()
                 if loop.is_running():
-                    logger.warning((
-                        "不可以在异步上下文中同步等待下载! "
-                        "这个警告通常发生于某些逻辑试图通过 <File>.file 获取文件消息段的文件内容。"
-                        "请使用 await get_file() 代替直接获取 <File>.file 字段"
-                    ))
+                    logger.warning(
+                        (
+                            "不可以在异步上下文中同步等待下载! "
+                            "这个警告通常发生于某些逻辑试图通过 <File>.file 获取文件消息段的文件内容。"
+                            "请使用 await get_file() 代替直接获取 <File>.file 字段"
+                        )
+                    )
                     return ""
                 else:
                     # 等待下载完成
@@ -620,7 +671,7 @@ class File(BaseMessageComponent):
         else:
             self.file_ = value
 
-    async def get_file(self, allow_return_url: bool=False) -> str:
+    async def get_file(self, allow_return_url: bool = False) -> str:
         """异步获取文件。请注意在使用后清理下载的文件, 以免占用过多空间
 
         Args:
@@ -629,6 +680,9 @@ class File(BaseMessageComponent):
         Returns:
             str: 文件路径或者 http 下载链接
         """
+        if allow_return_url and self.url:
+            return self.url
+
         if self.file_ and os.path.exists(self.file_):
             return os.path.abspath(self.file_)
 
@@ -645,6 +699,29 @@ class File(BaseMessageComponent):
         file_path = os.path.join(download_dir, f"{uuid.uuid4().hex}")
         await download_file(self.url, file_path)
         self.file_ = os.path.abspath(file_path)
+
+    async def register_to_file_service(self):
+        """
+        将文件注册到文件服务。
+
+        Returns:
+            str: 注册后的URL
+
+        Raises:
+            Exception: 如果未配置 callback_api_base
+        """
+        callback_host = astrbot_config.get("callback_api_base")
+
+        if not callback_host:
+            raise Exception("未配置 callback_api_base，文件服务不可用")
+
+        file_path = await self.get_file()
+
+        token = await file_token_service.register_file(file_path)
+
+        logger.debug(f"已注册：{callback_host}/api/file/{token}")
+
+        return f"{callback_host}/api/file/{token}"
 
 
 class WechatEmoji(BaseMessageComponent):

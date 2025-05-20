@@ -44,19 +44,26 @@ class AstrBotUpdator(RepoZipUpdator):
     def _reboot(self, delay: int = 3):
         """重启当前程序
         在指定的延迟后，终止所有子进程并重新启动程序
+        这里只能使用 os.exec* 来重启程序
         """
-        py = sys.executable
         time.sleep(delay)
         self.terminate_child_processes()
-        py = py.replace(" ", "\\ ")
+        if os.name == "nt":
+            py = f'"{sys.executable}"'
+        else:
+            py = sys.executable
+
         try:
             if "astrbot" in os.path.basename(sys.argv[0]):  # 兼容cli
-                args = [
-                    f'"{arg}"' if " " in arg else arg for arg in sys.argv[1:]
-                ]
-                os.execl(py, py, "-m", "astrbot.cli.__main__", *args)
+                if os.name == "nt":
+                    args = [
+                        f'"{arg}"' if " " in arg else arg for arg in sys.argv[1:]
+                    ]
+                else:
+                    args = sys.argv[1:]
+                os.execl(sys.executable, py, "-m", "astrbot.cli.__main__", *args)
             else:
-                os.execl(py, py, *sys.argv)
+                os.execl(sys.executable, py, *sys.argv)
         except Exception as e:
             logger.error(f"重启失败（{py}, {e}），请尝试手动重启。")
             raise e
@@ -73,7 +80,7 @@ class AstrBotUpdator(RepoZipUpdator):
         file_url = None
 
         if os.environ.get("ASTRBOT_CLI"):
-            raise Exception("不支持更新CLI启动的AstrBot") # 避免版本管理混乱
+            raise Exception("不支持更新CLI启动的AstrBot")  # 避免版本管理混乱
 
         if latest:
             latest_version = update_data[0]["tag_name"]

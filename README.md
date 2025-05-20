@@ -33,7 +33,7 @@ AstrBot 是一个松耦合、异步、支持多消息平台部署、具有易用
 
 > [!NOTE]
 > 
-> 个人微信接入所依赖的开源项目 Gewechat 近期已停止维护，我们正在评估其他方案（如 xxxbot 等）并将在数日内接入（很快！）。目前推荐微信用户暂时使用**微信官方**推出的企业微信接入方式和微信客服接入方式(版本 >= v3.5.7)。详情请前往 [#1443](https://github.com/AstrBotDevs/AstrBot/issues/1443) 讨论。
+> 个人微信接入所依赖的开源项目 Gewechat 近期已停止维护，`v3.5.10` 已经支持接入 WeChatPadPro 替换 gewechat 方式。详见文档 [WeChatPadPro](https://astrbot.app/deploy/platform/wechat/wechatpadpro.html)
 
 ## ✨ 近期更新
 
@@ -78,12 +78,27 @@ AstrBot 是一个松耦合、异步、支持多消息平台部署、具有易用
 
 #### 手动部署
 
-推荐使用 `uv`。
+> 推荐使用 `uv`。
+
+首先，安装 uv：
+
+```bash
+pip install uv
+```
+
+通过 Git Clone 安装 AstrBot：
 
 ```bash
 git clone https://github.com/AstrBotDevs/AstrBot && cd AstrBot
-pip install uv
 uv run main.py
+```
+
+或者，直接通过 uvx 安装 AstrBot：
+
+```bash
+mkdir astrbot && cd astrbot
+uvx astrbot init
+# uvx astrbot run
 ```
 
 或者请参阅官方文档 [通过源码部署 AstrBot](https://astrbot.app/deploy/astrbot/cli.html) 。
@@ -113,21 +128,26 @@ uv run main.py
 
 | 名称    | 支持性 | 类型 | 备注 |
 | -------- | ------- | ------- | ------- |
-| OpenAI API | ✔    | 文本生成 | 也支持 DeepSeek、Google Gemini、GLM、Kimi、硅基流动、xAI 等兼容 OpenAI API 的服务 |
+| OpenAI API | ✔    | 文本生成 | 也支持 DeepSeek、Google Gemini、GLM、Kimi、xAI 等兼容 OpenAI API 的服务 |
 | Claude API | ✔    | 文本生成 |  |
 | Google Gemini API | ✔    | 文本生成 |  |
 | Dify | ✔    | LLMOps |  |
-| DashScope(阿里云百炼应用) | ✔    | LLMOps |  |
+| 阿里云百炼应用 | ✔    | LLMOps |  |
 | Ollama | ✔    | 模型加载器 | 本地部署 DeepSeek、Llama 等开源语言模型 |
 | LM Studio | ✔    | 模型加载器 | 本地部署 DeepSeek、Llama 等开源语言模型 |
 | LLMTuner | ✔    | 模型加载器 | 本地加载 lora 等微调模型 |
+| 硅基流动 | ✔    | 模型 API 服务平台 |  |
+| PPIO 派欧云 | ✔    | 模型 API 服务平台 |  |
 | OneAPI | ✔    | LLM 分发系统 |  |
 | Whisper | ✔    | 语音转文本 | 支持 API、本地部署 |
 | SenseVoice | ✔    | 语音转文本 | 本地部署 |
 | OpenAI TTS API | ✔    | 文本转语音 |  |
 | GSVI | ✔    | 文本转语音 | GPT-Sovits-Inference |
-| Fishaudio | ✔    | 文本转语音 | GPT-Sovits 作者参与的项目 |
-| Edge-TTS | ✔    | 文本转语音 | Edge 浏览器的免费 TTS |
+| FishAudio | ✔    | 文本转语音 | GPT-Sovits 作者参与的项目 |
+| Edge TTS | ✔    | 文本转语音 | Edge 浏览器的免费 TTS |
+| 阿里云百炼 TTS | ✔    | 文本转语音 |  |
+| Azure TTS | ✔    | 文本转语音 | Microsoft Azure TTS |
+
 
 ## ❤️ 贡献
 

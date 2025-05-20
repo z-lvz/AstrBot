@@ -5,7 +5,7 @@
 import os
 from astrbot.core.utils.astrbot_path import get_astrbot_data_path
 
-VERSION = "3.5.8"
+VERSION = "3.5.10"
 DB_PATH = os.path.join(get_astrbot_data_path(), "data_v3.db")
 
 # 默认配置
@@ -155,6 +155,16 @@ CONFIG_METADATA_2 = {
                         "host": "这里填写你的局域网IP或者公网服务器IP",
                         "port": 11451,
                     },
+                    "wechatpadpro(微信)": {
+                        "id": "wechatpadpro",
+                        "type": "wechatpadpro",
+                        "enable": False,
+                        "admin_key": "stay33",
+                        "host": "这里填写你的局域网IP或者公网服务器IP",
+                        "port": 8059,
+                        "wpp_active_message_poll": False,
+                        "wpp_active_message_poll_interval": 3,
+                    },
                     "weixin_official_account(微信公众平台)": {
                         "id": "weixin_official_account",
                         "type": "weixin_official_account",
@@ -210,6 +220,16 @@ CONFIG_METADATA_2 = {
                     },
                 },
                 "items": {
+                    "wpp_active_message_poll": {
+                      "description": "是否启用主动消息轮询",
+                      "type": "bool",
+                      "hint": "只有当你发现微信消息没有按时同步到 AstrBot 时，才需要启用这个功能，默认不启用。"
+                    },
+                    "wpp_active_message_poll_interval": {
+                      "description": "主动消息轮询间隔",
+                      "type": "int",
+                      "hint": "主动消息轮询间隔，单位为秒，默认 3 秒，最大不要超过 60 秒，否则可能被认为是旧消息。"
+                    },
                     "kf_name": {
                       "description": "微信客服账号名",
                       "type": "string",
@@ -236,10 +256,10 @@ CONFIG_METADATA_2 = {
                         "hint": "Telegram 命令自动刷新间隔，单位为秒。",
                     },
                     "id": {
-                        "description": "ID",
+                        "description": "机器人名称",
                         "type": "string",
                         "obvious_hint": True,
-                        "hint": "ID 不能和其它的平台适配器重复，否则将发生严重冲突。",
+                        "hint": "机器人名称(ID)不能和其它的平台适配器重复。",
                     },
                     "type": {
                         "description": "适配器类型",
@@ -497,6 +517,7 @@ CONFIG_METADATA_2 = {
                     "OpenAI": {
                         "id": "openai",
                         "type": "openai_chat_completion",
+                        "provider_type": "chat_completion",
                         "enable": True,
                         "key": [],
                         "api_base": "https://api.openai.com/v1",
@@ -505,9 +526,10 @@ CONFIG_METADATA_2 = {
                             "model": "gpt-4o-mini",
                         },
                     },
-                    "Azure_OpenAI": {
+                    "Azure OpenAI": {
                         "id": "azure",
                         "type": "openai_chat_completion",
+                        "provider_type": "chat_completion",
                         "enable": True,
                         "api_version": "2024-05-01-preview",
                         "key": [],
@@ -517,9 +539,10 @@ CONFIG_METADATA_2 = {
                             "model": "gpt-4o-mini",
                         },
                     },
-                    "xAI(grok)": {
+                    "xAI": {
                         "id": "xai",
                         "type": "openai_chat_completion",
+                        "provider_type": "chat_completion",
                         "enable": True,
                         "key": [],
                         "api_base": "https://api.x.ai/v1",
@@ -528,9 +551,10 @@ CONFIG_METADATA_2 = {
                             "model": "grok-2-latest",
                         },
                     },
-                    "Anthropic(claude)": {
+                    "Anthropic": {
                         "id": "claude",
                         "type": "anthropic_chat_completion",
+                        "provider_type": "chat_completion",
                         "enable": True,
                         "key": [],
                         "api_base": "https://api.anthropic.com/v1",
@@ -543,6 +567,7 @@ CONFIG_METADATA_2 = {
                     "Ollama": {
                         "id": "ollama_default",
                         "type": "openai_chat_completion",
+                        "provider_type": "chat_completion",
                         "enable": True,
                         "key": ["ollama"],  # ollama 的 key 默认是 ollama
                         "api_base": "http://localhost:11434/v1",
@@ -550,9 +575,10 @@ CONFIG_METADATA_2 = {
                             "model": "llama3.1-8b",
                         },
                     },
-                    "LM_Studio": {
+                    "LM Studio": {
                         "id": "lm_studio",
                         "type": "openai_chat_completion",
+                        "provider_type": "chat_completion",
                         "enable": True,
                         "key": ["lmstudio"],
                         "api_base": "http://localhost:1234/v1",
@@ -563,6 +589,7 @@ CONFIG_METADATA_2 = {
                     "Gemini(OpenAI兼容)": {
                         "id": "gemini_default",
                         "type": "openai_chat_completion",
+                        "provider_type": "chat_completion",
                         "enable": True,
                         "key": [],
                         "api_base": "https://generativelanguage.googleapis.com/v1beta/openai/",
@@ -571,9 +598,10 @@ CONFIG_METADATA_2 = {
                             "model": "gemini-1.5-flash",
                         },
                     },
-                    "Gemini(googlegenai原生)": {
+                    "Gemini": {
                         "id": "gemini_default",
                         "type": "googlegenai_chat_completion",
+                        "provider_type": "chat_completion",
                         "enable": True,
                         "key": [],
                         "api_base": "https://generativelanguage.googleapis.com/",
@@ -597,6 +625,7 @@ CONFIG_METADATA_2 = {
                     "DeepSeek": {
                         "id": "deepseek_default",
                         "type": "openai_chat_completion",
+                        "provider_type": "chat_completion",
                         "enable": True,
                         "key": [],
                         "api_base": "https://api.deepseek.com/v1",
@@ -605,9 +634,10 @@ CONFIG_METADATA_2 = {
                             "model": "deepseek-chat",
                         },
                     },
-                    "Zhipu(智谱)": {
+                    "智谱 AI": {
                         "id": "zhipu_default",
                         "type": "zhipu_chat_completion",
+                        "provider_type": "chat_completion",
                         "enable": True,
                         "key": [],
                         "timeout": 120,
@@ -616,9 +646,10 @@ CONFIG_METADATA_2 = {
                             "model": "glm-4-flash",
                         },
                     },
-                    "SiliconFlow(硅基流动)": {
+                    "硅基流动": {
                         "id": "siliconflow",
                         "type": "openai_chat_completion",
+                        "provider_type": "chat_completion",
                         "enable": True,
                         "key": [],
                         "timeout": 120,
@@ -627,9 +658,10 @@ CONFIG_METADATA_2 = {
                             "model": "deepseek-ai/DeepSeek-V3",
                         },
                     },
-                    "MoonShot(Kimi)": {
+                    "Kimi": {
                         "id": "moonshot",
                         "type": "openai_chat_completion",
+                        "provider_type": "chat_completion",
                         "enable": True,
                         "key": [],
                         "timeout": 120,
@@ -638,9 +670,22 @@ CONFIG_METADATA_2 = {
                             "model": "moonshot-v1-8k",
                         },
                     },
+                    "PPIO派欧云": {
+                        "id": "ppio",
+                        "type": "openai_chat_completion",
+                        "provider_type": "chat_completion",
+                        "enable": True,
+                        "key": [],
+                        "api_base": "https://api.ppinfra.com/v3/openai",
+                        "timeout": 120,
+                        "model_config": {
+                            "model": "deepseek/deepseek-r1",
+                        },
+                    },
                     "LLMTuner": {
                         "id": "llmtuner_default",
                         "type": "llm_tuner",
+                        "provider_type": "chat_completion",
                         "enable": True,
                         "base_model_path": "",
                         "adapter_model_path": "",
@@ -651,6 +696,7 @@ CONFIG_METADATA_2 = {
                     "Dify": {
                         "id": "dify_app_default",
                         "type": "dify",
+                        "provider_type": "chat_completion",
                         "enable": True,
                         "dify_api_type": "chat",
                         "dify_api_key": "",
@@ -660,9 +706,10 @@ CONFIG_METADATA_2 = {
                         "variables": {},
                         "timeout": 60,
                     },
-                    "Dashscope(阿里云百炼应用)": {
+                    "阿里云百炼应用": {
                         "id": "dashscope",
                         "type": "dashscope",
+                        "provider_type": "chat_completion",
                         "enable": True,
                         "dashscope_app_type": "agent",
                         "dashscope_api_key": "",
@@ -678,6 +725,7 @@ CONFIG_METADATA_2 = {
                     "FastGPT": {
                         "id": "fastgpt",
                         "type": "openai_chat_completion",
+                        "provider_type": "chat_completion",
                         "enable": True,
                         "key": [],
                         "api_base": "https://api.fastgpt.in/api/v1",
@@ -686,6 +734,7 @@ CONFIG_METADATA_2 = {
                     "Whisper(API)": {
                         "id": "whisper",
                         "type": "openai_whisper_api",
+                        "provider_type": "speech_to_text",
                         "enable": False,
                         "api_key": "",
                         "api_base": "",
@@ -693,22 +742,25 @@ CONFIG_METADATA_2 = {
                     },
                     "Whisper(本地加载)": {
                         "whisper_hint": "(不用修改我)",
+                        "type": "openai_whisper_selfhost",
+                        "provider_type": "speech_to_text",
                         "enable": False,
                         "id": "whisper",
-                        "type": "openai_whisper_selfhost",
                         "model": "tiny",
                     },
-                    "sensevoice(本地加载)": {
+                    "SenseVoice(本地加载)": {
                         "sensevoice_hint": "(不用修改我)",
+                        "type": "sensevoice_stt_selfhost",
+                        "provider_type": "speech_to_text",
                         "enable": False,
                         "id": "sensevoice",
-                        "type": "sensevoice_stt_selfhost",
                         "stt_model": "iic/SenseVoiceSmall",
                         "is_emotion": False,
                     },
-                    "OpenAI_TTS(API)": {
+                    "OpenAI TTS(API)": {
                         "id": "openai_tts",
                         "type": "openai_tts_api",
+                        "provider_type": "text_to_speech",
                         "enable": False,
                         "api_key": "",
                         "api_base": "",
@@ -716,43 +768,118 @@ CONFIG_METADATA_2 = {
                         "openai-tts-voice": "alloy",
                         "timeout": "20",
                     },
-                    "Edge_TTS": {
+                    "Edge TTS": {
                         "edgetts_hint": "提示：使用这个服务前需要安装有 ffmpeg，并且可以直接在终端调用 ffmpeg 指令。",
                         "id": "edge_tts",
                         "type": "edge_tts",
+                        "provider_type": "text_to_speech",
                         "enable": False,
                         "edge-tts-voice": "zh-CN-XiaoxiaoNeural",
                         "timeout": 20,
                     },
-                    "GSVI_TTS(API)": {
+                    "GSVI TTS(API)": {
                         "id": "gsvi_tts",
                         "type": "gsvi_tts_api",
+                        "provider_type": "text_to_speech",
                         "api_base": "http://127.0.0.1:5000",
                         "character": "",
                         "emotion": "default",
                         "enable": False,
                         "timeout": 20,
                     },
-                    "FishAudio_TTS(API)": {
+                    "FishAudio TTS(API)": {
                         "id": "fishaudio_tts",
                         "type": "fishaudio_tts_api",
+                        "provider_type": "text_to_speech",
                         "enable": False,
                         "api_key": "",
                         "api_base": "https://api.fish.audio/v1",
                         "fishaudio-tts-character": "可莉",
                         "timeout": "20",
                     },
-                    "阿里云百炼_TTS(API)": {
+                    "阿里云百炼 TTS(API)": {
                         "id": "dashscope_tts",
                         "type": "dashscope_tts",
+                        "provider_type": "text_to_speech",
                         "enable": False,
                         "api_key": "",
                         "model": "cosyvoice-v1",
                         "dashscope_tts_voice": "loongstella",
                         "timeout": "20",
                     },
+                    "Azure TTS": {
+                        "id": "azure_tts",
+                        "type": "azure_tts",
+                        "provider_type": "text_to_speech",
+                        "enable": True,
+                        "azure_tts_voice": "zh-CN-YunxiaNeural",
+                        "azure_tts_style": "cheerful",
+                        "azure_tts_role": "Boy",
+                        "azure_tts_rate": "1",
+                        "azure_tts_volume": "100",
+                        "azure_tts_subscription_key": "",
+                        "azure_tts_region": "eastus"
+                    },
+                    "MiniMax TTS(API)": {
+                        "id": "minimax_tts",
+                        "type": "minimax_tts_api",
+                        "provider_type": "text_to_speech",
+                        "enable": False,
+                        "api_key": "",
+                        "api_base": "https://api.minimax.chat/v1/t2a_v2",
+                        "minimax-group-id": "",
+                        "model": "speech-02-turbo",
+                        "minimax-langboost": "auto",
+                        "minimax-voice-speed": 1.0,
+                        "minimax-voice-vol": 1.0,
+                        "minimax-voice-pitch": 0,
+                        "minimax-is-timber-weight": False,
+                        "minimax-voice-id": "female-shaonv",
+                        "minimax-timber-weight": '[\n    {\n        "voice_id": "Chinese (Mandarin)_Warm_Girl",\n        "weight": 25\n    },\n    {\n        "voice_id": "Chinese (Mandarin)_BashfulGirl",\n        "weight": 50\n    }\n]',
+                        "minimax-voice-emotion": "neutral",
+                        "minimax-voice-latex": False,
+                        "minimax-voice-english-normalization": False,
+                        "timeout": 20,
+                    },
                 },
                 "items": {
+                    "azure_tts_voice": {
+                        "type": "string",
+                        "description": "音色设置",
+                        "hint": "API 音色"
+                    },
+                    "azure_tts_style": {
+                        "type": "string",
+                        "description": "风格设置",
+                        "hint": "声音特定的讲话风格。 可以表达快乐、同情和平静等情绪。"
+                    },
+                    "azure_tts_role": {
+                        "type": "string",
+                        "description": "模仿设置（可选）",
+                        "hint": "讲话角色扮演。 声音可以模仿不同的年龄和性别，但声音名称不会更改。 例如，男性语音可以提高音调和改变语调来模拟女性语音，但语音名称不会更改。 如果角色缺失或不受声音的支持，则会忽略此属性。",
+                        "options": ["Boy","Girl","YoungAdultFemale","YoungAdultMale","OlderAdultFemale","OlderAdultMale","SeniorFemale","SeniorMale","禁用"]
+                    },
+                    "azure_tts_rate": {
+                        "type": "string",
+                        "description": "语速设置",
+                        "hint": "指示文本的讲出速率。可在字词或句子层面应用语速。 速率变化应为原始音频的 0.5 到 2 倍。"
+                    },
+                    "azure_tts_volume": {
+                        "type": "string",
+                        "description": "语音音量设置",
+                        "hint": "指示语音的音量级别。 可在句子层面应用音量的变化。以从 0.0 到 100.0（从最安静到最大声，例如 75）的数字表示。 默认值为 100.0。"
+                    },
+                    "azure_tts_region": {
+                        "type": "string",
+                        "description": "API 地区",
+                        "hint": "Azure_TTS 处理数据所在区域，具体参考 https://learn.microsoft.com/zh-cn/azure/ai-services/speech-service/regions",
+                        "options": ["southafricanorth", "eastasia", "southeastasia", "australiaeast", "centralindia", "japaneast", "japanwest", "koreacentral", "canadacentral", "northeurope", "westeurope", "francecentral", "germanywestcentral", "norwayeast", "swedencentral", "switzerlandnorth", "switzerlandwest", "uksouth", "uaenorth", "brazilsouth", "qatarcentral", "centralus", "eastus", "eastus2", "northcentralus", "southcentralus", "westcentralus", "westus", "westus2", "westus3"]
+                    },
+                    "azure_tts_subscription_key": {
+                        "type": "string",
+                        "description": "服务订阅密钥",
+                        "hint": "Azure_TTS 服务的订阅密钥（注意不是令牌）"
+                    },
                     "dashscope_tts_voice": {
                         "description": "语音合成模型",
                         "type": "string",
@@ -836,6 +963,64 @@ CONFIG_METADATA_2 = {
                                 "hint": "模型应该生成的思考Token的数量，设为0关闭思考。除gemini-2.5-flash外的模型会静默忽略此参数。",
                             },
                         },
+                    },
+                    "minimax-group-id": {
+                        "type": "string",
+                        "description": "用户组",
+                        "hint": "于账户管理->基本信息中可见",
+                    },
+                    "minimax-langboost": {
+                        "type": "string",
+                        "description": "指定语言/方言",
+                        "hint": "增强对指定的小语种和方言的识别能力，设置后可以提升在指定小语种/方言场景下的语音表现",
+                        "options": [ "Chinese","Chinese,Yue","English","Arabic","Russian","Spanish","French","Portuguese","German","Turkish","Dutch","Ukrainian","Vietnamese","Indonesian","Japanese","Italian","Korean","Thai","Polish","Romanian","Greek","Czech","Finnish","Hindi","auto",],
+                    },
+                    "minimax-voice-speed": {
+                        "type": "float",
+                        "description": "语速",
+                        "hint": "生成声音的语速, 取值[0.5, 2], 默认为1.0, 取值越大，语速越快",
+                    },
+                    "minimax-voice-vol": {
+                        "type": "float",
+                        "description": "音量",
+                        "hint": "生成声音的音量, 取值(0, 10], 默认为1.0, 取值越大，音量越高",
+                    },
+                    "minimax-voice-pitch": {
+                        "type": "int",
+                        "description": "语调",
+                        "hint": "生成声音的语调, 取值[-12, 12], 默认为0",
+                    },
+                    "minimax-is-timber-weight": {
+                        "type": "bool",
+                        "description": "启用混合音色",
+                        "hint": "启用混合音色, 支持以自定义权重混合最多四种音色, 启用后自动忽略单一音色设置",
+                    },
+                    "minimax-timber-weight": {
+                        "type": "string",
+                        "description": "混合音色",
+                        "editor_mode": True,
+                        "hint": "混合音色及其权重, 最多支持四种音色, 权重为整数, 取值[1, 100]. 可在官网API语音调试台预览代码获得预设以及编写模板, 需要严格按照json字符串格式编写, 可以查看控制台判断是否解析成功. 具体结构可参照默认值以及官网代码预览.",
+                    },
+                    "minimax-voice-id": {
+                        "type": "string",
+                        "description": "单一音色",
+                        "hint": "单一音色编号, 详见官网文档",
+                    },
+                    "minimax-voice-emotion": {
+                        "type": "string",
+                        "description": "情绪",
+                        "hint": "控制合成语音的情绪",
+                        "options": ["happy","sad","angry","fearful","disgusted","surprised","neutral",],
+                    },
+                    "minimax-voice-latex": {
+                        "type": "bool",
+                        "description": "支持朗读latex公式",
+                        "hint": "朗读latex公式, 但是需要确保输入文本按官网要求格式化",
+                    },
+                    "minimax-voice-english-normalization": {
+                        "type": "bool",
+                        "description": "支持英语文本规范化",
+                        "hint": "可提升数字阅读场景的性能，但会略微增加延迟",
                     },
                     "rag_options": {
                         "description": "RAG 选项",
@@ -934,7 +1119,12 @@ CONFIG_METADATA_2 = {
                         "hint": "ID 不能和其它的服务提供商重复，否则将发生严重冲突。",
                     },
                     "type": {
-                        "description": "模型提供商类型",
+                        "description": "模型提供商种类",
+                        "type": "string",
+                        "invisible": True,
+                    },
+                    "provider_type": {
+                        "description": "模型提供商能力种类",
                         "type": "string",
                         "invisible": True,
                     },
